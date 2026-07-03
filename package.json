@@ -1,0 +1,13 @@
+{
+  "name": "bcz-media-downloader-api",
+  "version": "1.0.0",
+  "description": "Unlimited Video and Audio Downloader API by BCZ",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  }
+}
