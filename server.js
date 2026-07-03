@@ -1,7 +1,7 @@
 /**
  * BCZ Media Downloader Backend Engine
  * Bangladesh Cyber Zone
- * 100% Error-Free Production-Ready Node.js Server with Unicode (Bangla) Naming Support
+ * 100% Error-Free Production-Ready Node.js Server with Platform-Aware Downloader
  */
 
 const express = require('express');
@@ -185,14 +185,15 @@ app.get('/api/download', (req, res) => {
         const lowerUrl = videoUrl.toLowerCase();
         const isYouTube = lowerUrl.includes("youtube.com") || lowerUrl.includes("youtu.be") || lowerUrl.includes("youtube/shorts");
         
-        let selectedFormat = formatId;
         if (isYouTube) {
-            selectedFormat = (formatId === "1080" || formatId === "720") ? "22" : (formatId === "480" || formatId === "360" ? "18" : formatId);
+            // ইউটিউবের ক্ষেত্রে FFmpeg বাইপাস করতে ২২ বা ১৮ তে ম্যাপ করা হবে
+            const selectedFormat = (formatId === "1080" || formatId === "720") ? "22" : (formatId === "480" || formatId === "360" ? "18" : formatId);
+            args = ['-f', selectedFormat, '-o', '-', videoUrl];
         } else {
-            selectedFormat = (formatId === "1080" || formatId === "720" || formatId === "480" || formatId === "360") ? "best" : formatId;
+            // ফেসবুক বা টিকটকের ক্ষেত্রে কোনো ফরম্যাট আইডি পাঠানো হবে না।
+            // yt-dlp স্বয়ংক্রিয়ভাবে তার সেরা প্রাক-সংযুক্ত ফরম্যাটটি সিলেক্ট করবে।
+            args = ['-o', '-', videoUrl];
         }
-        
-        args = ['-f', selectedFormat, '-o', '-', videoUrl];
     }
     
     const command = fs.existsSync(YT_DLP_PATH) ? YT_DLP_PATH : 'yt-dlp';
